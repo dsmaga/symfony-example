@@ -25,6 +25,9 @@ make app
 
 # from docker container
 ./bin/console hello-kitty:manage
+
+# Check code
+make grumphp
 ```
 
 ## Rest
