@@ -1,6 +1,12 @@
 <?php
 
-namespace App;
+/**
+ * Created by dsmaga at 26.04.2024
+ */
+
+declare(strict_types=1);
+
+namespace App\Shared\Infrastructure;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;

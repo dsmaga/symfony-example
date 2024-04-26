@@ -11,14 +11,66 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+    App\Shared\Application\Command\CommandBusInterface:
+        class: App\Shared\Infrastructure\Command\CommandBus
+        tags:
+            - { name: 'messenger.bus', bus: 'command.bus' }
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Shared\Application\Event\EventBusInterface:
+        class: App\Shared\Infrastructure\Event\EventBus
+        tags:
+            - { name: 'messenger.bus', bus: 'event.bus' }
+
+    App\Shared\Application\Query\QueryBusInterface:
+        class: App\Shared\Infrastructure\Query\QueryBus
+        tags:
+            - { name: 'messenger.bus', bus: 'query.bus' }
+
+    App\HelloKitty\Domain\KittyRepositoryInterface:
+        class: App\HelloKitty\Infrastructure\Repository\KittyRepository
+        arguments:
+            $filePath: '%kernel.project_dir%/var/data/kitties.json'
+
+    App\HelloKitty\Application\Command\CreateKitty\CreateKittyService: ~
+    App\HelloKitty\Application\Command\CreateKitty\CreateKittyHandler:
+        tags:
+            - name: 'messenger.message_handler'
+              bus: 'command.bus'
+              handles: 'App\HelloKitty\Application\Command\CreateKitty\CreateKittyCommand'
+
+    App\HelloKitty\Application\Command\RenameKitty\RenameKittyService: ~
+    App\HelloKitty\Application\Command\RenameKitty\RenameKittyHandler:
+        tags:
+            - name: 'messenger.message_handler'
+              bus: 'command.bus'
+              handles: 'App\HelloKitty\Application\Command\RenameKitty\RenameKittyCommand'
+
+    App\HelloKitty\Application\Query\FindAllKitties\FindAllKittiesHandler:
+        tags:
+            - name: 'messenger.message_handler'
+              bus: 'query.bus'
+              handles: 'App\HelloKitty\Application\Query\FindAllKitties\FindAllKittiesQuery'
+
+    App\HelloKitty\Application\Query\FindKitty\FindKittyHandler:
+        tags:
+            - name: 'messenger.message_handler'
+              bus: 'query.bus'
+              handles: 'App\HelloKitty\Application\Query\FindKitty\FindKittyQuery'
+
+    Ui\Cli\:
+        resource: '../src/Ui/Cli/'
+
+    Ui\Rest\:
+        resource: '../src/Ui/Rest/'
+
+#    # makes classes in src/ available to be used as services
+#    # this creates a service per class whose id is the fully-qualified class name
+#    App\:
+#        resource: '../src/App/'
+#        exclude:
+#            - '../src/DependencyInjection/'
+#            - '../src/Entity/'
+#            - '../src/Kernel.php'
+#
+#    # add more service definitions when explicit configuration is needed
+#    # please note that last definitions always *replace* previous ones

@@ -22,10 +22,10 @@ upgrade: # updates composer dependencies using app service
 	docker compose run --rm --user $(shell id -u):$(shell id -g) php composer upgrade
 
 app: # attach to running app service with bash shell
-	docker compose exec php bash
+	docker compose exec --user $(shell id -u):$(shell id -g) php bash
 
 test: # Run phpunit tests
-	docker compose run --rm php ./bin/phpunit
+	docker compose run --rm --user $(shell id -u):$(shell id -g) php ./bin/phpunit
 
 phpstan: # Run phpstan
 	docker compose run --rm php ./vendor/bin/phpstan analyse
